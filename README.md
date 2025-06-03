@@ -1,90 +1,62 @@
-# Lambda: Control de Servicios ECS (Start/Stop)
+# Funciones Útiles en AWS
 
-Esta función Lambda permite iniciar o detener múltiples servicios en un clúster de ECS especificando su nombre y el número de tareas deseadas (`desiredCount`). Es útil para ahorrar costes apagando entornos fuera de horario o activarlos bajo demanda.
+Este repositorio contiene ejemplos prácticos y reutilizables de **funciones en AWS**, implementadas mediante AWS Lambda, e integradas con otros servicios como Amazon ECS, S3, EventBridge, CloudWatch, entre otros.
 
----
+## 📚 ¿Qué encontrarás aquí?
 
-## 📦 Código fuente
+Una colección de funciones Lambda diseñadas para resolver tareas comunes en entornos cloud. Algunas de las funciones incluidas son:
 
-Puedes ver el código fuente completo en el archivo `index.js` de este repositorio.
+- 🔁 Arranque y parada de contenedores en ECS.
+- 🗓️ Ejecución programada con EventBridge Scheduler.
+- 📦 Subida y gestión de archivos en S3.
+- 📥 Consumo de mensajes desde colas SQS.
+- 🔐 Gestión de secretos desde AWS Secrets Manager.
 
----
+Cada función está escrita en **JavaScript (Node.js)** o **Python**, y pensada para desplegarse fácilmente usando la consola de AWS o herramientas como el AWS CLI o SAM.
 
-## 🧾 Payload de entrada
+## 🚀 Despliegue rápido
 
-```json
-{
-  "cluster": "bondy-demo",
-  "services": [
-    {
-      "name": "rest_backend-demo",
-      "taskCount": 0
-    },
-    {
-      "name": "metrics-demo",
-      "taskCount": 0
-    },
-    {
-      "name": "workflows-demo",
-      "taskCount": 0
-    }
-  ]
-}
+Puedes desplegar cualquiera de las funciones siguiendo estos pasos:
+
+1. **Clona este repositorio:**
+
+```bash
+git clone git@personal:tu_usuario/aws-utils.git
+cd aws-utils
 ```
 
-- `cluster`: nombre del ECS Cluster.
-- `services`: array de servicios con nombre y número deseado de tareas (`taskCount`).
+2. **Accede a la carpeta de la función que te interese.**
 
----
+   Por ejemplo:
 
-## 🚀 Cómo desplegar esta Lambda
+```bash
+cd start-stop-ecs-task
+```
 
-1. **Crear la función Lambda**
+3. **Sube la función como un archivo ZIP o usa AWS Lambda Console.**
 
-   - Entra a la consola de AWS Lambda.
-   - Crea una nueva función Lambda desde cero.
-   - Usa Node.js 18 como runtime.
-   - Copia el contenido del archivo `index.js` en el editor de código.
-   - Añade la capa necesaria o empaqueta las dependencias si usas un ZIP.
-   - Asigna un rol con permisos mínimos:
-     - `ecs:UpdateService`
-     - `ecs:DescribeServices`
-     - `logs:*` (si quieres que escriba en CloudWatch)
+O bien usa la AWS CLI:
 
-2. **Conceder permisos adicionales (si fuera necesario)**
+```bash
+zip function.zip index.js
+aws lambda create-function --function-name startEcsTask \
+  --runtime nodejs18.x --handler index.handler \
+  --role arn:aws:iam::<tu-id>:role/<rol-con-permisos> \
+  --zip-file fileb://function.zip
+```
 
-   Si la Lambda debe actuar sobre otros recursos de ECS que están en otra cuenta o VPC, asegúrate de ajustar los permisos del rol.
+4. **Opcional:** configura una regla de ejecución periódica con EventBridge.
 
----
+## 🧩 Dependencias
 
-## 🕒 Crear una ejecución automática con EventBridge Scheduler
+Algunas funciones requieren configuración previa de:
 
-1. Ve a **Amazon EventBridge** → **Scheduler**.
-2. Crea una nueva regla con la expresión cron deseada, por ejemplo:
-   - `cron(0 21 ? * MON-FRI *)` → todos los días laborables a las 21:00 UTC.
-3. Configura el destino como la función Lambda creada.
-4. Añade el payload directamente en la sección de "Input":
-   ```json
-   {
-     "cluster": "bondy-demo",
-     "services": [
-       { "name": "rest_backend-demo", "taskCount": 0 },
-       { "name": "metrics-demo", "taskCount": 0 },
-       { "name": "workflows-demo", "taskCount": 0 }
-     ]
-   }
-   ```
+- Roles de IAM con permisos adecuados
+- Clústeres ECS y definiciones de tarea
+- Buckets S3 o colas SQS configuradas
 
----
+Cada función incluye un archivo `README.md` adicional dentro de su carpeta, explicando su propósito y configuración.
 
-## 📌 Casos de uso comunes
+## 📄 Licencia
 
-- Pausar entornos de desarrollo por la noche.
-- Arrancar un entorno solo en horario de oficina.
-- Detener servicios no utilizados automáticamente.
-
----
-
-## ✍️ Autor
-
-Esta función fue desarrollada por [tu nombre o usuario GitHub] como parte de una serie de herramientas pequeñas, útiles y directas que normalmente no se comparten, pero son clave para una operación eficiente.
+Este proyecto está disponible bajo la licencia MIT.
