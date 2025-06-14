@@ -52,4 +52,4 @@ Recomendado usar esta Lambda solo en entornos internos o controlados, ya que ree
 
 ## ✍️ Autor
 
-Creada como solución rápida para automatizaciones internas en AWS sin necesidad de configurar gateways complejos.
+Esta función fue desarrollada por josé Antonio Sánchez (darthplaguesi@gmail.com) como solución rápida para automatizaciones internas en AWS sin necesidad de configurar gateways complejos.
